@@ -7,7 +7,14 @@ import geocoder
 # Main page, there's nothing here...
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    data = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+
+    if request.environ.get('HTTP_X_FORWARDED_FOR') is None:
+        data = (request.environ['REMOTE_ADDR'])
+    else:
+        data = (request.environ['HTTP_X_FORWARDED_FOR'])  # if behind a proxy
+
+
+    data2 = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     loc_data = geocoder.ip(data).json
     if 'hostname' in loc_data.keys():
         hostname = loc_data['hostname']
