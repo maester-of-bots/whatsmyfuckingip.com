@@ -121,13 +121,16 @@ def index():
 
         payload = {
             random.choice(words['ip']): loc_data['ip'],
+            random.choice(words['hostname']): hostname,
             random.choice(words['address']): loc_data['address'],
             random.choice(words['zipcode']): loc_data['postal'],
             random.choice(words['lat']): loc_data['lat'],
             random.choice(words['long']): loc_data['lng'],
-            random.choice(words['maps']): map_encoded,
-            random.choice(words['hostname']): hostname,
 
+        }
+
+        map_payload = {
+            random.choice(words['maps']): maps_url,
         }
 
         isp_payload = {
@@ -139,4 +142,5 @@ def index():
         return render_template('fuckingip.html',
                                isp_payload=isp_payload,
                                payload=payload,
-                               header=header)
+                               header=header,
+                               map_payload=map_payload)

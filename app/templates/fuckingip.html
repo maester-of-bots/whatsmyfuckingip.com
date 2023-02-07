@@ -7,6 +7,14 @@
 <h2>{{entry}}</h2><span>{{ payload[entry] }}</span><br>
 {% endfor %}
 
+
+{% for entry in map_payload %}
+<h2>{{entry}}</h2>
+<span>
+    <a href="{{map_payload[entry]}}">{{map_payload[entry]}}</a>
+</span>
+{% endfor %}
+
 <h2>{{isp_payload['header']}}</h2><span ><a href="{{isp_payload['url']}}">{{isp_payload['name']}}</a></span><br><br><br><br><br>
 
 
