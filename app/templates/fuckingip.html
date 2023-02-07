@@ -2,15 +2,12 @@
 {% block content %}
 
 <h1>here's your fucking data.</h1><br><br>
-<h2>your goddamn public IP address</h2><span>{{ ip }}</span><br>
 
-<h2>an approximate fucking location that's probably wrong as shit</h2><span >{{ address }}</span><br>
-<h2>stupid motherfucking zip code</h2><span >{{ zipcode }}</span><br>
-<h2>your fucking latitude</h2><span >{{ lat }}</span><br>
-<h2>and your goddamn longitude</h2><span >{{ lon }}</span><br>
-<h2>some random fucking dns fuckery</h2><span >{{ hostname }}</span><br>
-<h2>might be the cocksucker you pay for internet</h2><span ><a href="{{ isp_url }}">{{ isp }}</a></span><br><br><br><br><br>
+{% for entry in payload %}
+<h2>{{entry}}</h2><span>{{ payload[entry] }}</span><br>
+{% endfor %}
 
-<script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="SOBERLab" data-color="#FFDD00" data-emoji=""  data-font="Cookie" data-text="Buy me a cloud server" data-outline-color="#000000" data-font-color="#000000" data-coffee-color="#ffffff" ></script>
+<h2>{{isp_payload['header']}}</h2><span ><a href="{{isp_payload['url']}}">{{isp_payload['name']}}</a></span><br><br><br><br><br>
 
-{% endblock %}f
+
+{% endblock %}
