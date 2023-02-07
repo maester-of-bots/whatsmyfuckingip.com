@@ -116,7 +116,7 @@ def index():
         maps_url = f'https://www.google.com/maps/place/@{loc_data["lat"]},{loc_data["lng"]}'
 
 
-        header = random.choice(data['header'])
+        header = random.choice(words['header'])
 
         payload = {
             random.choice(words['ip']): loc_data['ip'],
