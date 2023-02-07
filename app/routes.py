@@ -115,6 +115,7 @@ def index():
 
         maps_url = f'https://www.google.com/maps/place/@{loc_data["lat"]},{loc_data["lng"]}'
 
+        map_encoded = f'<a href="{maps_url}">{maps_url}</a>'
 
         header = random.choice(words['header'])
 
@@ -124,7 +125,7 @@ def index():
             random.choice(words['zipcode']): loc_data['postal'],
             random.choice(words['lat']): loc_data['lat'],
             random.choice(words['long']): loc_data['lng'],
-            random.choice(words['maps']): maps_url,
+            random.choice(words['maps']): map_encoded,
             random.choice(words['hostname']): hostname,
 
         }
