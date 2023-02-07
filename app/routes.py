@@ -62,10 +62,10 @@ words = {
     ],
     "isp": [
            "might be the cocksucker you pay for internet",
-            "best guess at the assole you pay for internet",
-            "Your Fucking Internet Service Provider",
-            "Your Internet Fucking Service Provider",
-            "Your Fucking Interfuckingnet Service Provider",
+            "best guess at the asshole you pay for internet",
+            "your Fucking Internet Service Provider",
+            "your Internet Fucking Service Provider",
+            "your Fucking Interfuckingnet Service Provider",
             "i bet this fucking asshole overcharges you for internet",
     ]
 }
@@ -115,7 +115,6 @@ def index():
 
         maps_url = f'https://www.google.com/maps/place/@{loc_data["lat"]},{loc_data["lng"]}'
 
-        map_encoded = f'<a href="{maps_url}">{maps_url}</a>'
 
         header = random.choice(words['header'])
 
