@@ -81,9 +81,9 @@ def index():
     else:
         data = request.environ['HTTP_X_FORWARDED_FOR']
 
+    # For local testing
     if data == '127.0.0.1':
         header = random.choice(words['header'])
-
 
         payload = {
             random.choice(words['ip']): '127.0.0.1',
@@ -107,17 +107,23 @@ def index():
                                isp_payload=isp_payload,
                                header=header)
     else:
+
+        # Grab location data
         loc_data = geocoder.ip(data).json
+
+        # Set the hostname or leave it blank
         if 'hostname' in loc_data.keys():
             hostname = loc_data['hostname']
         else:
-            hostname = ''
+            hostname = 'hah, like they\'d give you a fucking hostname'
 
+        # Craft a URL for Google Maps based on the lat/lon
         maps_url = f'https://www.google.com/maps/place/@{loc_data["lat"]},{loc_data["lng"]}'
 
-
+        # Pull the header
         header = random.choice(words['header'])
 
+        # Generate the payload with random phrases, and their corresponding data from the location data
         payload = {
             random.choice(words['ip']): loc_data['ip'],
             random.choice(words['hostname']): hostname,
@@ -128,10 +134,12 @@ def index():
 
         }
 
+        # Create Google Maps payload because this needs to be separate from the others smh
         map_payload = {
             random.choice(words['maps']): maps_url,
         }
 
+        # Create the ISP payload / information
         isp_payload = {
             "header": random.choice(words['isp']),
             "url": "https://ipinfo.io/" + loc_data['org'].split(" ")[0],
