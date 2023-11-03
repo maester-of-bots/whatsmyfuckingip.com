@@ -7,8 +7,11 @@ import random
 words = {
     "header": [
         "here's your fucking public connection data.",
-        "here it is.  that fucking info you asked for.  is that <i>all</i>?",
+        "here it is.  that fucking info you asked for.  is that ALL?",
         "here's your goddamn shit, asshat.  next time just curl canhazip.com.",
+        "Yep.  We're watching you, fucker.",
+        "This IP is associated with so much fucking porn.",
+        "This IP is associated with the saddest google searches, man...",
         ],
     "ip": [
         "your goddamn public IP address",
