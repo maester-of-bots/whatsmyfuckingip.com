@@ -75,6 +75,11 @@ words = {
 
 
 
+# Main page, there's nothing here...
+@app.route('/dns.html', methods=['GET', 'POST'])
+def dns():
+    data = request.environ['REMOTE_ADDR']
+
 
 # Main page, there's nothing here...
 @app.route('/', methods=['GET', 'POST'])
@@ -94,15 +99,15 @@ def index():
             random.choice(words['zipcode']): '69420',
             random.choice(words['lat']): '11.01',
             random.choice(words['long']): '11.11',
-            random.choice(words['maps']): 'https://thc-lab.net',
-            random.choice(words['hostname']): 'home.thc-lab.net',
+            random.choice(words['maps']): 'https://whatsmyfuckingip.com',
+            random.choice(words['hostname']): 'whatsmyfuckingip.com',
 
         }
 
         isp_payload = {
             "header": random.choice(words['isp']),
-            "url": "thc-lab.net",
-            "name": "Fuckin' THC's Lab, Bitch!"
+            "url": "whatsmyfuckingip.com",
+            "name": "Here.Test"
         }
 
         return render_template('fuckingip.html',
