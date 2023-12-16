@@ -122,6 +122,17 @@ def dns():
 
 
 # Main page, there's nothing here...
+@app.route('/text', methods=['GET', 'POST'])
+def text():
+    if request.environ.get('HTTP_X_FORWARDED_FOR') is None:
+        data = request.environ['REMOTE_ADDR']
+    else:
+        data = request.environ['HTTP_X_FORWARDED_FOR']
+
+    loc_data = master_getter(data)
+    return loc_data['ip']
+
+# Main page, there's nothing here...
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.environ.get('HTTP_X_FORWARDED_FOR') is None:
@@ -129,84 +140,57 @@ def index():
     else:
         data = request.environ['HTTP_X_FORWARDED_FOR']
 
-    # For local testing
-    if data == '127.0.0.1':
-        header = random.choice(words['header'])
+    loc_data = master_getter(data)
 
-        payload = {
-            random.choice(words['ip']): '127.0.0.1',
-            random.choice(words['address']): 'Your fuckin house',
-            random.choice(words['zipcode']): '69420',
-            random.choice(words['lat']): '11.01',
-            random.choice(words['long']): '11.11',
-            random.choice(words['maps']): 'https://whatsmyfuckingip.com',
-            random.choice(words['hostname']): 'whatsmyfuckingip.com',
-
-        }
-
-        isp_payload = {
-            "header": random.choice(words['isp']),
-            "url": "whatsmyfuckingip.com",
-            "name": "Here.Test"
-        }
-
-        return render_template('fuckingip.html',
-                               payload=payload,
-                               isp_payload=isp_payload,
-                               header=header)
-    else:
-
-        loc_data = master_getter(data)
-
-        # Set the hostname or leave it blank
-        if 'hostname' in loc_data.keys():
-            if loc_data['hostname'] != "Missing":
-                hostname = loc_data['hostname']
-            else:
-                hostname = 'hah, like they\'d give you a fucking hostname'
+    # Set the hostname or leave it blank
+    if 'hostname' in loc_data.keys():
+        if loc_data['hostname'] != "Missing":
+            hostname = loc_data['hostname']
         else:
             hostname = 'hah, like they\'d give you a fucking hostname'
+    else:
+        hostname = 'hah, like they\'d give you a fucking hostname'
 
-        # Craft a URL for Google Maps based on the lat/lon
-        maps_url = f'https://www.google.com/maps/place/@{loc_data["lat"]},{loc_data["lng"]}'
+    # Craft a URL for Google Maps based on the lat/lon
+    maps_url = f'https://www.google.com/maps/place/@{loc_data["lat"]},{loc_data["lng"]}'
 
-        # Pull the header
-        header = random.choice(words['header'])
+    # Pull the header
+    header = random.choice(words['header'])
 
-        # Generate the payload with random phrases, and their corresponding data from the location data
-        payload = {
-            random.choice(words['ip']): loc_data['ip'],
-            random.choice(words['hostname']): hostname,
-            random.choice(words['address']): loc_data['address'],
-            random.choice(words['zipcode']): loc_data['postal'],
-            random.choice(words['lat']): loc_data['lat'],
-            random.choice(words['long']): loc_data['lng']
-        }
+    # Generate the payload with random phrases, and their corresponding data from the location data
+    payload = {
+        random.choice(words['ip']): loc_data['ip'],
+        random.choice(words['hostname']): hostname,
+        random.choice(words['address']): loc_data['address'],
+        random.choice(words['zipcode']): loc_data['postal'],
+        random.choice(words['lat']): loc_data['lat'],
+        random.choice(words['long']): loc_data['lng']
+    }
 
-        src_payload = {
-            'src_url': loc_data['src1'],
-            'src_name': loc_data['src2']
-        }
+    src_payload = {
+        'src_url': loc_data['src1'],
+        'src_name': loc_data['src2']
+    }
 
-        # Create Google Maps payload because this needs to be separate from the others smh
-        map_payload = {
-            random.choice(words['maps']): maps_url,
-        }
+    # Create Google Maps payload because this needs to be separate from the others smh
+    map_payload = {
+        random.choice(words['maps']): maps_url,
+    }
 
-        # Create the ISP payload / information
-        if " " in loc_data['org']:
-            url = "https://ipinfo.io/" + loc_data['org'].split(" ")[0]
-        else:
-            url = "Missing"
-        isp_payload = {
-            "header": random.choice(words['isp']),
-            "url": url,
-            "name": loc_data['org']
-        }
+    # Create the ISP payload / information
+    if " " in loc_data['org']:
+        url = "https://ipinfo.io/" + loc_data['org'].split(" ")[0]
+    else:
+        url = "Missing"
+    isp_payload = {
+        "header": random.choice(words['isp']),
+        "url": url,
+        "name": loc_data['org']
+    }
 
-        return render_template('fuckingip.html',
-                               isp_payload=isp_payload,
-                               payload=payload,
-                               header=header,
-                               map_payload=map_payload,
-                               src_payload=src_payload)
+    return render_template('fuckingip.html',
+                           isp_payload=isp_payload,
+                           payload=payload,
+                           header=header,
+                           map_payload=map_payload,
+                           src_payload=src_payload)
