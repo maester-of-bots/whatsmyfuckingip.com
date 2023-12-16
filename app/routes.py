@@ -181,6 +181,8 @@ def index():
             random.choice(words['zipcode']): loc_data['postal'],
             random.choice(words['lat']): loc_data['lat'],
             random.choice(words['long']): loc_data['lng'],
+            'src_url': loc_data['src1'],
+            'src_name': loc_data['src2'],
 
         }
 
