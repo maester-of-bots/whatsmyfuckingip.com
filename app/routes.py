@@ -22,7 +22,9 @@ def loc_get_IPInfo(data):
             "postal": loc_data['postal'],
             "lat": loc_data['lat'],
             'lng': loc_data['lng'],
-            'org': loc_data['org']
+            'org': loc_data['org'],
+            'src1': "https://ipinfo.io/",
+            'src2': "IPInfo"
         }
 
         return data
@@ -46,7 +48,9 @@ def loc_get_IPGeolocation(ip_address):
             "postal": results['zipcode'],
             "lat": results['latitude'],
             'lng': results['longitude'],
-            'org': "Missing"
+            'org': "Missing",
+            'src1': "https://ipgeolocation.io/",
+            'src2': "IP Geolocation"
         }
         return data
     else:
@@ -65,7 +69,9 @@ def loc_get_ipapi(ip_address):
             "postal": results['zip'],
             "lat": results['lat'],
             'lng': results['lon'],
-            'org': results['as']
+            'org': results['as'],
+            'src1': "http://ip-api.com/",
+            'src2': "IP-API"
         }
         return data
     else:
