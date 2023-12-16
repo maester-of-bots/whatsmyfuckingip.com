@@ -180,10 +180,12 @@ def index():
             random.choice(words['address']): loc_data['address'],
             random.choice(words['zipcode']): loc_data['postal'],
             random.choice(words['lat']): loc_data['lat'],
-            random.choice(words['long']): loc_data['lng'],
-            'src_url': loc_data['src1'],
-            'src_name': loc_data['src2'],
+            random.choice(words['long']): loc_data['lng']
+        }
 
+        src_payload = {
+            'src_url': loc_data['src1'],
+            'src_name': loc_data['src2']
         }
 
         # Create Google Maps payload because this needs to be separate from the others smh
@@ -206,4 +208,5 @@ def index():
                                isp_payload=isp_payload,
                                payload=payload,
                                header=header,
-                               map_payload=map_payload)
+                               map_payload=map_payload,
+                               src_payload=src_payload)
