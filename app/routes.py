@@ -1,77 +1,111 @@
 from flask import render_template, request
 from app import app
-
+from app.data import *
+from dotenv import load_dotenv
+import os
 import geocoder
 import random
+import requests
 
-words = {
-    "header": [
-        "here's your fucking public connection data.",
-        "here it is.  that fucking info you asked for.  is that ALL?",
-        "here's your goddamn shit, asshat.  next time just curl canhazip.com.",
-        "Yep.  We're watching you, fucker.",
-        "This IP is associated with so much fucking porn.",
-        "This IP is associated with the saddest google searches, man...",
-        ],
-    "ip": [
-        "your goddamn public IP address",
-        "your fucking public IP address",
-        "your router's fucking public address",
-        "the fucking ip address you can be found at",
-        "your fucking public IP",
 
-    ],
-    "address": [
-        "an approximate fucking location that's probably wrong as shit",
-        "fucking best guess at location",
-        "this might be near your fucking house",
-        "is this where you live?  I hear it's fucking nice there.",
-    ],
-    "zipcode": [
-           "stupid motherfucking zip code",
-        "fucking zip code",
-        "here's your stupid fucking zipcode",
-        "fuck, who gives a fuck about zipcodes???",
-        "here's your fuckin' fancy little fuckin' zip code, bitch"
-        ],
-    "lat": [
-        "your fucking latitude",
-        "your goddamn fucking stupid latitude",
-        "your motherfucking latitude",
-        "your dumb fuckin' latitude",
-        "your whore-ass latitude",
-        "your fucking latitude coordinate"
-        ],
-    "long": [
-        "and your fucking longitude",
-        "and your goddamn fucking stupid longitude",
-        "and your motherfucking longitude",
-        "and your dumb fuckin' longitude",
-        "and your whore-ass longitude",
-        "and your fucking longitude coordinate"
-        ],
-    "maps": [
-        "here's a fucking google maps link",
-        "here's a fuckin' link in case you didn't know where your general area is",
-        "here's a handy motherfucking google maps link",
-        "here, fuckin' click this link so Google knows where you live"
-    ],
-    "hostname": [
-        "a bullshit fucking hostname from your ISP",
-        "your fucking IP address in a DNS name, depending on your fucking ISP",
-        "some fucking DNS shit that might not be right",
-        "your associated fucking DNS record",
-        "some random fucking dns fuckery",
-    ],
-    "isp": [
-           "might be the cocksucker you pay for internet",
-            "best guess at the asshole you pay for internet",
-            "your Fucking Internet Service Provider",
-            "your Internet Fucking Service Provider",
-            "your Fucking Interfuckingnet Service Provider",
-            "i bet this fucking asshole overcharges you for internet",
-    ]
-}
+def loc_get_IPInfo(data):
+    """Use Geocoder / IPInfo to get data"""
+
+    loc_data = geocoder.ipinfo(data).json
+
+    if loc_data:
+
+        data = {
+            "ip": loc_data['ip'],
+            "hostname": loc_data['hostname'],
+            "address": loc_data['address'],
+            "postal": loc_data['postal'],
+            "lat": loc_data['lat'],
+            'lng': loc_data['lng'],
+            'org': loc_data['org']
+        }
+
+        return data
+
+    else:
+        return False
+
+def loc_get_IPGeolocation(ip_address):
+    """Use the free API key for IPGeolocation.io to get data"""
+
+    load_dotenv()
+    api_key = os.getenv('ipgeolocation_key')
+    url = f"http://api.ipgeolocation.io/ipgeo?apiKey={api_key}&ip={ip_address}"
+    response = requests.get(url)
+    if response.status_code == 200:
+        results = response.json()
+        data = {
+            "ip": results['ip'],
+            "hostname": "Missing",
+            "address": f"{results['city']} {results['state_prov']}, {results['country_name']}",
+            "postal": results['zipcode'],
+            "lat": results['latitude'],
+            'lng': results['longitude'],
+            'org': "Missing"
+        }
+        return data
+    else:
+        return False
+def loc_get_ipapi(ip_address):
+    """Get data using a nifty free no-key API"""
+
+    url = f"http://ip-api.com/json/{ip_address}"
+    response = requests.get(url)
+    if response.status_code == 200:
+        results = response.json()
+        data = {
+            "ip": results['query'],
+            "hostname": "Missing",
+            "address": f"{results['city']} {results['regionName']}, {results['country']}",
+            "postal": results['zip'],
+            "lat": results['lat'],
+            'lng': results['lon'],
+            'org': results['as']
+        }
+        return data
+    else:
+        return False
+
+
+
+
+def master_getter(IP):
+    try:
+        data_best = loc_get_IPInfo(IP)
+        if data_best:
+            return data_best
+        else:
+            raise
+    except Exception as e:
+        print(e)
+
+    try:
+        data_mid = loc_get_IPGeolocation(IP)
+        if data_mid:
+            return data_mid
+        else:
+            raise
+    except Exception as e:
+        print(e)
+
+    try:
+        data_desperate = loc_get_ipapi(IP)
+        if data_desperate:
+            return data_desperate
+        else:
+            raise
+    except Exception as e:
+        print(e)
+        return False
+
+
+
+
 
 
 
@@ -116,12 +150,14 @@ def index():
                                header=header)
     else:
 
-        # Grab location data
-        loc_data = geocoder.ip(data).json
+        loc_data = master_getter(data)
 
         # Set the hostname or leave it blank
         if 'hostname' in loc_data.keys():
-            hostname = loc_data['hostname']
+            if loc_data['hostname'] != "Missing":
+                hostname = loc_data['hostname']
+            else:
+                hostname = 'hah, like they\'d give you a fucking hostname'
         else:
             hostname = 'hah, like they\'d give you a fucking hostname'
 
@@ -148,9 +184,13 @@ def index():
         }
 
         # Create the ISP payload / information
+        if " " in loc_data['org']:
+            url = "https://ipinfo.io/" + loc_data['org'].split(" ")[0]
+        else:
+            url = "Missing"
         isp_payload = {
             "header": random.choice(words['isp']),
-            "url": "https://ipinfo.io/" + loc_data['org'].split(" ")[0],
+            "url": url,
             "name": loc_data['org']
         }
 
